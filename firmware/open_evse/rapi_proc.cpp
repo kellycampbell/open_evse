@@ -316,9 +316,11 @@ int EvseRapiProcessor::processCmd()
 	    echo = ((u1.u8 == '0') ? 0 : 1);
 	    break;
 #ifdef ADVPWR
+#ifdef GFI_SELFTEST
 	  case 'F': // GFI self test
 	    g_EvseController.EnableGfiSelfTest(u1.u8);
 	    break;
+#endif
 	  case 'G': // ground check
 	    g_EvseController.EnableGndChk(u1.u8);
 	    break;
@@ -486,7 +488,7 @@ int EvseRapiProcessor::processCmd()
 #else // !TEMPERATURE_MONITORING
 	  rc = g_EvseController.SetCurrentCapacity(u2.u8,1,u1.u8);
 #endif // TEMPERATURE_MONITORING
-  
+
 	  sprintf(buffer,"%d",(int)g_EvseController.GetCurrentCapacity());
 	}
 	bufCnt = 1; // flag response text output
@@ -538,7 +540,7 @@ int EvseRapiProcessor::processCmd()
       }
       break;
 #endif // VOLTMETER
-#ifdef DELAYTIMER     
+#ifdef DELAYTIMER
     case 'T': // timer
       if (tokenCnt == 5) {
 	extern DelayTimer g_DelayTimer;
@@ -557,7 +559,7 @@ int EvseRapiProcessor::processCmd()
 	rc = 0;
       }
       break;
-#endif // DELAYTIMER      
+#endif // DELAYTIMER
 
 #if defined(KWH_RECORDING) && !defined(VOLTMETER)
     case 'V': // set voltage
@@ -576,7 +578,7 @@ int EvseRapiProcessor::processCmd()
       else if (tokenCnt == 3) { //This is a full HEARTBEAT_SUPERVISION setpoint command with both parameters
 	    rc = 0;
         u1.u16 = (uint16_t)dtou32(tokens[1]);	// HS Interval in seconds.  0 = disabled
-        u2.u8 = (uint8_t)dtou32(tokens[2]);	// HS fallback current, in amperes 
+        u2.u8 = (uint8_t)dtou32(tokens[2]);	// HS fallback current, in amperes
 		if (u1.u16 == 0) { //Test for deactivation {
           rc = g_EvseController.HsRestoreAmpacity();
 		}
@@ -590,7 +592,7 @@ int EvseRapiProcessor::processCmd()
         rc = 1; //Invalid number of tokens
       }
       sprintf(buffer,"%d %d %d", g_EvseController.GetHearbeatInterval(), g_EvseController.GetHearbeatCurrent(), g_EvseController.GetHearbeatTrigger());
-      bufCnt = 1; 
+      bufCnt = 1;
       break;
 #endif //HEARTBEAT_SUPERVISION
 
@@ -802,15 +804,15 @@ int EvseRapiProcessor::processCmd()
       bufCnt = 1; // flag response text output
       rc = 0;
       break;
-	  
+
 #ifdef HEARTBEAT_SUPERVISION
     case 'Y': // HEARTBEAT SUPERVISION
 	  sprintf(buffer,"%d %d %d", g_EvseController.GetHearbeatInterval(), g_EvseController.GetHearbeatCurrent(), g_EvseController.GetHearbeatTrigger());
-      bufCnt = 1; 
+      bufCnt = 1;
 	  rc = 0;
       break;
 #endif //HEARTBEAT_SUPERVISION
-	   
+
     }
     break;
 
@@ -972,7 +974,7 @@ int8_t EvseRapiProcessor::receiveResp(unsigned long msstart)
 	  sendbuf[bufpos] = '\0';
 	  if (!tokenize(sendbuf)) return 0;
 	  else return 1;
-	  
+
 	}
 	else {
 	  sendbuf[bufpos++] = c;
@@ -1099,7 +1101,7 @@ void RapiDoCmd()
 #endif // RAPI_I2C
 }
 
-// return: 0=sent 
+// return: 0=sent
 //         1=nothing changed, didn't send
 //         2=in processCmd(), didn't send
 uint8_t RapiSendEvseState(uint8_t force)
@@ -1115,7 +1117,7 @@ uint8_t RapiSendEvseState(uint8_t force)
     uint8_t currentCapacity = g_EvseController.GetCurrentCapacity();
     uint16_t vFlags = g_EvseController.GetVFlags() & ECVF_CHANGED_TEST;
     if (force ||
-	((evseState != EVSE_STATE_UNKNOWN) && 
+	((evseState != EVSE_STATE_UNKNOWN) &&
 	 !((evseState == EVSE_STATE_A) && (vFlags & ECVF_EV_CONNECTED)) &&
 	 !((evseState == EVSE_STATE_B) && !(vFlags & ECVF_EV_CONNECTED)) &&
 	 !((evseState == EVSE_STATE_C) && !(vFlags & ECVF_EV_CONNECTED)) &&

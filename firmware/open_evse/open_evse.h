@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
+
 // UK/EU specific settings (by OpenEnergyMonitor):
 // - Disable AUTOSVCLEVEL (autodetection is designed for split-phase)
 // - Charging level default to L2
@@ -79,7 +79,7 @@ typedef unsigned long time_t;
 #define AUTOSVCLEVEL
 #endif
 
-// on boot, EVSE locked until receives $SB 
+// on boot, EVSE locked until receives $SB
 //#define BOOTLOCK
 
 // show disabled tests before POST
@@ -174,14 +174,14 @@ extern AutoCurrentCapacityController g_ACCController;
 
 // If you loop a wire from the third GFI pin through the CT a few times and then to ground,
 // enable this. ADVPWR must also be defined.
-#define GFI_SELFTEST
+// #define GFI_SELFTEST
 
 // behavior specified by UL
 // 1) if enabled, POST failure will cause a hard fault until power cycled.
 //    disabled, will retry POST continuously until it passes
 // 2) if enabled, any a fault occurs immediately after charge is initiated,
 //    hard fault until power cycled. Otherwise, do the standard delay/retry sequence
-#define UL_COMPLIANT
+// #define UL_COMPLIANT
 
 #ifdef UL_COMPLIANT
 #define ADVPWR
